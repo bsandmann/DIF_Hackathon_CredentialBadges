@@ -77,7 +77,8 @@ The project is still under development and things may break ;)
 A sample of a published Credential can be found [here - as in the demo video](https://archfolio.de)
 
 # Related work
-This project originated from the Cardano Ecosystem (that's the reason we also support `did:prism`) and the main project can be found [here](https://github.com/bsandmann/blocktrust.CredentialBadges).
+This project originated from the Cardano Ecosystem (that's the reason we also support `did:prism`) and the main project can be found [here](https://github.com/bsandmann/blocktrust.CredentialBadges). It is mostly identical, but contains additional code which is unrelated to this project. For that reason we split it up.
+
 This is a purely private project. Blocktrust is not a company and a collection of people working on SSI related problems mostly within the Cardano Ecosystem, but also outside e.g. [Blocktrust Analytics](https://analytics.blocktrust.dev)
 
 
