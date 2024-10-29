@@ -10,6 +10,8 @@ The Credential Badges project enables users to **embed** their **Open Badge 3.0*
 
 The project is built with .NET and includes a custom library to support Open Badges 3.0. It currently supports the *did:key* and *did:prism* methods for signature verification. Future plans include adding more templates to support a broader range of Open Badge types, such as diplomas, and collaborating with credential issuers to offer customized HTML snippets.
 
+See the video [here](https://youtu.be/53Ai7W1rDOQ)
+
 # How to test
 The application is hosted at [https://badges.blocktrust.dev](https://badges.blocktrust.dev)
 
