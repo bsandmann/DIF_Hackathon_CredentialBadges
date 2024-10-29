@@ -72,7 +72,7 @@ We suggest you use the following Credential from DCC for testing.
 ```
 The project is still under development and things may break ;)
 
-A sample of a published Credential can be found [here - as in the demo video](https://archfolio.de])
+A sample of a published Credential can be found [here - as in the demo video](https://archfolio.de)
 
 # Related work
 This project originated from the Cardano Ecosystem (that's the reason we also support `did:prism`) and the main project can be found [here](https://github.com/bsandmann/blocktrust.CredentialBadges).
