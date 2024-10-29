@@ -1,0 +1,173 @@
+@page "/previewbadge/{credentialId:guid}"
+@using Blocktrust.CredentialBadges.Web.Domain
+@using Blocktrust.CredentialBadges.Web.Services.TemplatesService
+@using MediatR
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.GetVerifiedCredentialById
+@using Blocktrust.CredentialBadges.Web.Commands.VerifiedCredentials.UpdateTemplateId
+@inject IMediator Mediator
+@inject NavigationManager NavigationManager
+@inject TemplatesService TemplatesService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Preview Badge</PageTitle>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<div class="flex flex-col bg-[#FFFFFF] w-full items-center ">
+    <h1 class="text-2xl font-bold text-[#334155] mb-2">Preview Badge</h1>
+    <p class="text-[#334155] mb-6">Select a template for your credential</p>
+
+    @if (credential != null && templates.Any())
+    {
+        <div class="min-h-[30vh]">
+                    @((MarkupString)templates[currentTemplateIndex])
+
+        </div>
+
+        <div class="flex justify-center mb-6 space-x-4">
+            <button @onclick="PreviousTemplate" class="bg-[#F8FAFC] text-slate-600 font-medium py-1 px-2 rounded-md cursor-pointer transition-colors flex items-center" disabled="@(currentTemplateIndex == 0)">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button @onclick="NextTemplate" class="bg-[#F8FAFC] text-slate-600 font-medium py-1 px-2 rounded-md cursor-pointer transition-colors flex items-center" disabled="@(currentTemplateIndex == templates.Count - 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+
+        <div class="w-[50vw] flex justify-end mb-6">
+            <button @onclick="ToggleTheme" class="bg-[#334155] text-[#F8FAFC] font-medium py-1 px-2 rounded-full hover:bg-[#475569] transition-colors flex items-center">
+                <span class="material-symbols-outlined text-xs">
+                    @(isDarkMode ? "brightness_7" : "brightness_3")
+                </span>
+            </button>
+        </div>
+
+        <div class="mb-6">
+    
+            <div class="flex space-x-4 pb-2 max-w-[70vw] overflow-x-scroll badges-scroll">
+                @for (int i = 0; i < Math.Min(templates.Count, 4); i++)
+                {
+                    var index = i;
+                    <div>
+                        <a @onclick:preventDefault @onclick="() => SelectTemplate(index)" href="#" class="badge-container @(index == currentTemplateIndex ? "badge-selected" : "")">
+                            @((MarkupString)templates[index])
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-[#334155] mb-6">No templates available for this credential.</p>
+    }
+
+    <button 
+        @onclick="ContinueToCopySnippet" 
+        class="bg-[#334155] text-[#F8FAFC] font-medium py-2 px-4 rounded-md hover:bg-[#475569] transition-colors self-center"
+        disabled="@(templates.Count == 0)">
+        Continue
+    </button>
+</div>
+
+@code {
+    [Parameter] public Guid credentialId { get; set; }
+    
+    private VerifiedCredential credential;
+    private List<string> templates = new();
+    private List<string> templateIds = new();
+    private int currentTemplateIndex;
+    private bool isDarkMode;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCredential();
+        await LoadTemplates();
+    }
+
+    private async Task LoadCredential()
+    {
+        var result = await Mediator.Send(new GetVerifiedCredentialByIdRequest(credentialId));
+        if (result.IsSuccess)
+        {
+            credential = result.Value;
+        }
+        else
+        {
+            // Handle error
+            Console.WriteLine($"Error loading credential: {result.Errors.FirstOrDefault()?.Message}");
+        }
+    }
+
+    private async Task LoadTemplates()
+    {
+        if (credential != null)
+        {
+            var selectTemplateService = new SelectTemplateService();
+            templateIds = selectTemplateService.GetApplicableTemplateIds(credential);
+
+            templates = new List<string>();
+            foreach (var templateId in templateIds)
+            {
+                string theme = isDarkMode ? "dark" : "light";
+                if ((isDarkMode && templateId.EndsWith("dark")) || (!isDarkMode && templateId.EndsWith("light")))
+                {
+                    string populatedTemplate = TemplatesService.GetPopulatedTemplate(templateId, theme, credential);
+                    templates.Add(populatedTemplate);
+                }
+            }
+
+            if (templates.Count > 0)
+            {
+                currentTemplateIndex = 0;
+            }
+        }
+    }
+
+    private void PreviousTemplate()
+    {
+        if (currentTemplateIndex > 0)
+        {
+            currentTemplateIndex--;
+        }
+    }
+
+    private void NextTemplate()
+    {
+        if (currentTemplateIndex < templates.Count - 1)
+        {
+            currentTemplateIndex++;
+        }
+    }
+
+    private void SelectTemplate(int index)
+    {
+        currentTemplateIndex = index;
+    }
+
+    private void ToggleTheme()
+    {
+        isDarkMode = !isDarkMode;
+        LoadTemplates();
+    }
+
+    private async Task ContinueToCopySnippet()
+    {
+        if (templates.Any())
+        {
+            var filteredTemplateIds = templateIds.Where(x => (isDarkMode && x.EndsWith("dark")) || (!isDarkMode && x.EndsWith("light"))).ToList();
+            var selectedTemplateId = filteredTemplateIds[currentTemplateIndex];
+            
+            // Update the credential's template ID
+            var updateResult = await Mediator.Send(new UpdateCredentialTemplateIdRequest(credentialId, selectedTemplateId));
+            if (updateResult.IsSuccess)
+            {
+                // Navigate to copy snippet page with credential ID and selected template ID
+                NavigationManager.NavigateTo($"/copysnippet/{credentialId}/{selectedTemplateId}");
+            }
+            else
+            {
+                // Handle update error
+                Console.WriteLine($"Error updating credential template ID: {updateResult.Errors.FirstOrDefault()?.Message}");
+            }
+        }
+    }
+}

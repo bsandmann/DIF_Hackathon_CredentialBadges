@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.badges-scroll {
+    overflow-x: scroll;
+    scrollbar-width: thin;          /* For Firefox */
+    scrollbar-color: #888 #f1f1f1;  /* For Firefox */
+}
+
+/* Webkit Browsers (Chrome, Safari, Edge) */
+.badges-scroll::-webkit-scrollbar {
+    height: 8px;  /* Height of the horizontal scrollbar */
+}
+
+.badges-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;  /* Background of the scrollbar track */
+}
+
+.badges-scroll::-webkit-scrollbar-thumb {
+    background-color: #888;  /* Color of the scrollbar handle */
+    border-radius: 10px;     /* Rounded corners of the scrollbar handle */
+}
+
+.badges-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #555;  /* Color of the scrollbar handle when hovered */
+}
+
+/* Custom styles for navigation links */
+.nav-link {
+    position: relative;
+    padding-bottom: 4px;
+    transition: color 0.3s ease;
+    color: #374151;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    color: #1f2937;
+}
+
+.nav-link.active {
+    color: #1f2937;
+}
+
+/* Underline styles */
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #374151;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+/*For small devices*/
+@media (max-width: 768px) {
+    .nav-link {
+        padding-bottom: 0;
+    }
+
+    .nav-link::after {
+        display: none;
+    }
+    .nav-link.active {
+        color: #0f0f39;
+    }
+}
+
+/* Default styles */
+@layer base {
+    body {
+        @apply font-sans;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-museo;
+    }
+
+    button, .btn {
+        @apply font-museo;
+    }
+}
+
+/* Custom utility classes for easy overrides */
+@layer utilities {
+    .font-museo {
+        font-family: museo, serif;
+    }
+
+    .font-museo-sans {
+        font-family: museo-sans, sans-serif;
+    }
+}
+
+
+
+
+
+
+
+

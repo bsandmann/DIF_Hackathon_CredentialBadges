@@ -1,0 +1,17 @@
+﻿@inherits LayoutComponentBase
+
+<div class="flex flex-col min-h-screen">
+    <NavMenu/>
+    <main class="flex flex-col items-center max-w-[100vw] overflow-x-hidden ">
+            @Body
+    </main>
+</div>
+
+<div id="blazor-error-ui" class="fixed bottom-0 w-full bg-red-100 border-t-4 border-red-500 text-red-700 px-4 py-3 shadow-md hidden">
+    <p class="font-bold">An unhandled error has occurred.</p>
+    <p class="text-sm">
+        <a href="" class="underline hover:text-red-800">Reload</a>
+        <span class="px-1">|</span>
+        <a class="underline hover:text-red-800 cursor-pointer dismiss">Dismiss</a>
+    </p>
+</div>
